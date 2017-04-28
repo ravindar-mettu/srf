@@ -1,0 +1,245 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      py:strip="">
+
+  
+
+  <!-- get vcs info from config file, and set up i18n -->
+	<?python
+    f = open("/var/www/apps/repositoryhosting/current/config/config.default.yml", 'r')
+    yml = f.read()
+    f.close()
+    idx_env = yml.find('production')
+    idx_ver = yml.find(':versions:', idx_env)
+    idx_vcs = yml.find(':git:', idx_ver)
+    idx_vcs_nl = yml.find("\n", idx_vcs)
+    idx_trac = yml.find(':trac:', idx_ver)
+    idx_trac_nl = yml.find("\n", idx_trac)
+
+    vcs_type = "Git"
+    vcs_version = yml[idx_vcs+5:idx_vcs_nl]
+    trac_version = yml[idx_trac+6:idx_trac_nl]
+
+    cur_locale = 'en'
+    if req.locale == 'zh_CN' or req.locale == 'zh':
+      cur_locale = 'zh_CN'
+    if req.locale == 'ru_RU' or req.locale == 'ru':
+      cur_locale = 'ru'
+    if req.locale == 'de_DE' or req.locale == 'de':
+      cur_locale = 'de'
+    if req.locale == 'pt_BR' or req.locale == 'pt':
+      cur_locale = 'pt_BR'
+
+    is_demo_account = False
+
+    translations = { 
+      'en': { 
+        "project_settings": "Project Settings", 
+        "dashboard": "Dashboard", 
+        "search": "Search", 
+        "footer_left": "Project hosting provided by <a href='http://repositoryhosting.com'><span class='inner_link'>RepositoryHosting.com</span></a>. Powered by <a href='" + href.about() + "'><span class='inner_link'><strong>Trac " + trac_version + "</strong></span></a> and <strong>" + vcs_type + " " + vcs_version + "</strong>.", 
+        "footer_right": "<a href='/en/pages/terms_of_service' target='_blank'><span class='inner_link'>Terms of Service</span></a> <a href='/en/support' target='_blank'><span class='inner_link'>Contact Support</span></a>", 
+        "My Profile": "My Profile", 
+        "My Trac Preferences": "My Trac Preferences", 
+        "Log In": "Log In", 
+        "Login": "Log In", 
+        "Log Out": "Log Out", 
+        "Logout": "Log Out", 
+        "Scrum Dashboard": "Scrum Dashboard", 
+        "Teams": "Teams", 
+        "Downloads": "Downloads", 
+        "Import": "Import", 
+        "Blog": "Blog", 
+        "Time Reports": "Time Reports", 
+        "Forums": "Forums", 
+        "Work Log": "Work Log", 
+        "One Plan, One Price": "One Plan, One Price", 
+        "$6/mo": "$6/mo", 
+        "Sign Up": "Sign Up", 
+        "for your 30 day free trial now!": "for your 30 day free trial now!", 
+        "Contact us": "Contact us", 
+        "if you have any questions.": "if you have any questions.", 
+        "Demo": "Demo", 
+        "Account": "Account", 
+      }, 
+      'zh_CN': { 
+        "project_settings": "项目设置", 
+        "dashboard": "信息中心", 
+        "search": "查找", 
+        "footer_left": "由<a href='http://repositoryhosting.com'><span class='inner_link'>RepositoryHosting.com</span></a>提供的项目托管。 由<a href='" + href.about() + "'><span class='inner_link'><strong>Trac " + trac_version + "</strong></span></a>和<strong>" + vcs_type + " " + vcs_version + "</strong>驱动。", 
+        "footer_right": "<a href='/zh_CN/pages/terms_of_service' target='_blank'><span class='inner_link'>服务条款</span></a> <a href='/zh_CN/support' target='_blank'><span class='inner_link'>与支持人员联系</span></a>", 
+        "My Profile": "我的简介", 
+        "My Trac Preferences": "我的Trac偏好", 
+        "Log In": "登录", 
+        "Login": "登录", 
+        "Log Out": "退出", 
+        "Logout": "退出", 
+        "Scrum Dashboard": "Scrum信息中心", 
+        "Teams": "开发小组", 
+        "Downloads": "下载项", 
+        "Import": "导入", 
+        "Blog": "博客", 
+        "Time Reports": "时间报告", 
+        "Forums": "研讨论坛", 
+        "Work Log": "工作日志", 
+        "One Plan, One Price": "完美服务，价格合理", 
+        "$6/mo": "6美元/月", 
+        "Sign Up": "注册", 
+        "for your 30 day free trial now!": "for your 30 day free trial now!", 
+        "Contact us": "与我们联系", 
+        "if you have any questions.": "if you have any questions.", 
+        "Demo": "演示", 
+        "Account": "账户", 
+      }, 
+      'ru': { 
+        "project_settings": "Параметры Проекта", 
+        "dashboard": "Приборная Панель", 
+        "search": "Поиск", 
+        "footer_left": "Проект проводится <a href='http://repositoryhosting.com'><span class='inner_link'>RepositoryHosting.com</span></a>. Работает на <a href='" + href.about() + "'><span class='inner_link'><strong>Trac " + trac_version + "</strong></span></a> и <strong>" + vcs_type + " " + vcs_version + "</strong>.", 
+        "footer_right": "<a href='/ru/pages/terms_of_service' target='_blank'><span class='inner_link'>Условиями Предоставления Услуг</span></a> <a href='/ru/support' target='_blank'><span class='inner_link'>Пишите Нам</span></a>", 
+        "My Profile": "Мой Профиль", 
+        "My Trac Preferences": "Мои Trac Предпочтения", 
+        "Log In": "Войдите", 
+        "Login": "Войдите", 
+        "Log Out": "Выйти", 
+        "Logout": "Выйти", 
+        "Scrum Dashboard": "Scrum Приборная Панель", 
+        "Teams": "Команды", 
+        "Downloads": "Загрузги", 
+        "Import": "Импорт", 
+        "Blog": "Блог", 
+        "Time Reports": "Время Докладов", 
+        "Forums": "Форумы", 
+        "Work Log": "Журнал Работы", 
+        "One Plan, One Price": "Один план, одна цена", 
+        "$6/mo": "$6/месяц", 
+        "Sign Up": "Регистрация", 
+        "for your 30 day free trial now!": "for your 30 day free trial now!", 
+        "Contact us": "Свяжитесь с нами", 
+        "if you have any questions.": "if you have any questions.", 
+        "Demo": "Демонстрацию", 
+        "Account": "Аккаунт", 
+      }, 
+      'de': { 
+        "project_settings": "Projekt Einstellungen", 
+        "dashboard": "Dashboard", 
+        "search": "Suche", 
+        "footer_left": "Project hosting provided by <a href='http://repositoryhosting.com'><span class='inner_link'>RepositoryHosting.com</span></a>. Powered by <a href='" + href.about() + "'><span class='inner_link'><strong>Trac " + trac_version + "</strong></span></a> and <strong>" + vcs_type + " " + vcs_version + "</strong>.", 
+        "footer_right": "<a href='/de/pages/terms_of_service' target='_blank'><span class='inner_link'>Service Bedingungen</span></a> <a href='/de/support' target='_blank'><span class='inner_link'>Contact Support</span></a>", 
+        "My Profile": "Mein Profil", 
+        "My Trac Preferences": "Meine Trac Einstellungen", 
+        "Log In": "Log In", 
+        "Login": "Log In", 
+        "Log Out": "Logout", 
+        "Logout": "Logout", 
+        "Scrum Dashboard": "Scrum Dashboard", 
+        "Teams": "Teams", 
+        "Downloads": "Downloads", 
+        "Import": "Import", 
+        "Blog": "Blog", 
+        "Time Reports": "Time Reports", 
+        "Forums": "Foren", 
+        "Work Log": "Work Log", 
+        "One Plan, One Price": "One Plan, One Price", 
+        "$6/mo": "$6/mo", 
+        "Sign Up": "Sign Up", 
+        "for your 30 day free trial now!": "for your 30 day free trial now!", 
+        "Contact us": "Contact us", 
+        "if you have any questions.": "if you have any questions.", 
+        "Demo": "Demo", 
+        "Account": "Account", 
+      }, 
+      'pt_BR': { 
+        "project_settings": "Project Settings", 
+        "dashboard": "Dashboard", 
+        "search": "Search", 
+        "footer_left": "Project hosting provided by <a href='http://repositoryhosting.com'><span class='inner_link'>RepositoryHosting.com</span></a>. Powered by <a href='" + href.about() + "'><span class='inner_link'><strong>Trac " + trac_version + "</strong></span></a> and <strong>" + vcs_type + " " + vcs_version + "</strong>.", 
+        "footer_right": "<a href='/pt_BR/pages/terms_of_service' target='_blank'><span class='inner_link'>Terms of Service</span></a> <a href='/pt_BR/support' target='_blank'><span class='inner_link'>Contact Support</span></a>", 
+        "My Profile": "My Profile", 
+        "My Trac Preferences": "My Trac Preferences", 
+        "Log In": "Log In", 
+        "Login": "Log In", 
+        "Log Out": "Log Out", 
+        "Logout": "Log Out", 
+        "Scrum Dashboard": "Scrum Dashboard", 
+        "Teams": "Teams", 
+        "Downloads": "Downloads", 
+        "Import": "Import", 
+        "Blog": "Blog", 
+        "Time Reports": "Time Reports", 
+        "Forums": "Forums", 
+        "Work Log": "Work Log", 
+        "One Plan, One Price": "One Plan, One Price", 
+        "$6/mo": "$6/mo", 
+        "Sign Up": "Sign Up", 
+        "for your 30 day free trial now!": "for your 30 day free trial now!", 
+        "Contact us": "Contact us", 
+        "if you have any questions.": "if you have any questions.", 
+        "Demo": "Demo", 
+        "Account": "Account", 
+      }, 
+      'fr': { 
+        "project_settings": "Project Settings", 
+        "dashboard": "Tableau de bord", 
+        "search": "Search", 
+        "footer_left": "Hébergement de projet par <a href='http://repositoryhosting.com'><span class='inner_link'>RepositoryHosting.com</span></a>. Powered by <a href='" + href.about() + "'><span class='inner_link'><strong>Trac " + trac_version + "</strong></span></a> and <strong>" + vcs_type + " " + vcs_version + "</strong>.", 
+        "footer_right": "<a href='/fr/pages/terms_of_service' target='_blank'><span class='inner_link'>Conditions d'utilisation</span></a> <a href='/fr/support' target='_blank'><span class='inner_link'>Contact Support</span></a>", 
+        "My Profile": "Mes préférences", 
+        "My Trac Preferences": "My Trac Preferences", 
+        "Log In": "Connexion", 
+        "Login": "Connexion", 
+        "Log Out": "Log Out", 
+        "Logout": "Log Out", 
+        "Scrum Dashboard": "Scrum Dashboard", 
+        "Teams": "Teams", 
+        "Downloads": "Downloads", 
+        "Import": "Import", 
+        "Blog": "Blog", 
+        "Time Reports": "Time Reports", 
+        "Forums": "Forums", 
+        "Work Log": "Work Log", 
+        "One Plan, One Price": "One Plan, One Price", 
+        "$6/mo": "$6/mo", 
+        "Sign Up": "Sign Up", 
+        "for your 30 day free trial now!": "for your 30 day free trial now!", 
+        "Contact us": "Contact us", 
+        "if you have any questions.": "if you have any questions.", 
+        "Demo": "Demo", 
+        "Account": "Account", 
+      }, 
+    }
+	?>
+
+  <!-- custom variables -->
+  
+  <py:def function="rh_urls(param)"
+    ><py:choose test=""
+      ><py:when test='param == "account"'>http://projects.maqsoftware.com</py:when
+      ><py:when test='param == "project"'>http://projects.maqsoftware.com/projects/249</py:when
+      ><py:when test='param == "project_update"'>http://projects.maqsoftware.com/projects/249/update_from_trac</py:when
+      ><py:when test='param == "project_settings"'>http://projects.maqsoftware.com/projects/249/edit</py:when
+      ><py:when test='param == "project_logo"'>http://d2f2vj6i7hhqf6.cloudfront.net/server/na-va-app-1/account/maq/project/srf/logo?20151018063748</py:when
+      ><py:when test='param == "signup"'>http://secure.repositoryhosting.com/account/new</py:when
+      ><py:otherwise>#</py:otherwise
+    ></py:choose
+  ></py:def>
+
+  <!--! Add site-specific style sheet -->
+  <head py:match="head" py:attrs="select('@*')">
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+
+    <link rel="stylesheet" href="//d2f2vj6i7hhqf6.cloudfront.net/stylesheets/trac_print.css" media="print" type="text/css" charset="utf-8" />
+    <!--[if lte IE 6]>
+      <link rel="stylesheet" href="//d2f2vj6i7hhqf6.cloudfront.net/stylesheets/trac_ie.css" type="text/css" charset="utf-8" />
+    <![endif]-->
+
+		${select('*|comment()|text()')}
+    <link rel="stylesheet" type="text/css" href="//d2f2vj6i7hhqf6.cloudfront.net/server/na-va-app-1/account/maq/project/srf/styles.css?20151018063748" />
+		
+
+		
+	    <script type="text/javascript" src="//d2f2vj6i7hhqf6.cloudfront.net/javascripts/application.js"></script>
+      <script type='text/javascript'>delayLoadGA("UA-7224444-1");</script>
+		
+	</head>
+</html>
